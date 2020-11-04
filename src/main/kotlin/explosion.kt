@@ -1,7 +1,7 @@
 /**
  * Represents explosions at a given time instant.
  *
- * TODO: Explosion color sequence is: branco, amarelo, magenta, vermelho, cyan, verde, azul escuro, preto
+ * TODO: Explosion color sequence is: WHITE, YELLOW, MAGENTA, RED, CYAN, GREEN, DARK BLUE, BLACK
  *
  * @property center     the explosion's center
  * @property radius     the eplosion's current radius
