@@ -1,43 +1,29 @@
 import pt.isel.canvas.*
 
+const val MARGIN = 50
+
 fun main() {
 
     onStart {
-        val canvas = Canvas(width = 800, height = 600, BLACK)
-        var explosionView: ExplosionView = ExplosionView(
-                Explosion(Location(x = 0.0, y = 0.0), radius = 0.0, rate = 0.0),
-                RED
-        )
+        val canvas = Canvas(WORLD_WIDTH, WORLD_HEIGHT, BLACK)
+
+        val entry = Location((MARGIN .. WORLD_WIDTH - MARGIN).random().toDouble(), 0.0)
+        val target = Location((MARGIN .. WORLD_WIDTH - MARGIN).random().toDouble(), WORLD_HEIGHT.toDouble())
+
+        var world = World(Missile(entry, entry, computeVelocity(entry, target)))
 
         canvas.onMouseDown {
-            explosionView = ExplosionView(
-                    Explosion(center = Location(it.x.toDouble(), it.y.toDouble()), radius = 5.0, rate = 1.06),
-                    RED
+            // Sempre que o rato é premido
+            world = World(
+                    world.missile,
+                    Explosion(Location(it.x.toDouble(), it.y.toDouble()))
             )
         }
 
-        val missile = Missile(
-            start = Location(100.0, 0.0),
-            current = Location(canvas.width / 2.0, canvas.height / 2.0),
-            Velocity(0.0, 0.0)
-        )
-
         canvas.onTimeProgress(period = 25) {
-
-            val maybeNewExplosion: Explosion =
-                if (explosionView.data.rate > 1.0) expandUntil(explosionView.data, maxRadius = 50.0)
-                else contractUntilZero(explosionView.data)
-
-            val newExplosion =
-                if (maybeNewExplosion == explosionView.data)
-                    Explosion(maybeNewExplosion.center, maybeNewExplosion.radius, rate = 0.94)
-                else maybeNewExplosion
-
-            explosionView = ExplosionView(newExplosion, explosionView.color)
-
-            canvas.erase()
-            drawExplosion(canvas, explosionView)
-            drawMissile(canvas, missile, RED)
+            // Apply time passing to the world
+            world = doStep(world)
+            drawWorld(canvas, world)
         }
     }
 
